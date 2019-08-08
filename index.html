@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>垃圾问卷调查</title>
+    <link rel="stylesheet" type="text/css" href="resources/css/ext-all.css" />
+    <!-- LIBS -->
+    <script type="text/javascript" src="adapter/ext/ext-base.js"></script>
+    <!-- ENDLIBS -->
+    <script type="text/javascript" src="ext-all.js"></script>
+    <script>
+        var navHandler = function(direction){
+            var wizard = Ext.getCmp('wizard').layout;
+            var prev = Ext.getCmp('move-prev');
+            var next = Ext.getCmp('move-next');
+            var activeId = wizard.activeItem.id;
+
+            if (activeId == 'card-0') {
+                if (direction == 1) {
+                    var answer1=Ext.getCmp('Q1123').items.items.filter(item=>item.checked);
+                    Ext.getCmp('Q1Field').setValue(answer1[0].boxLabel);
+                    wizard.setActiveItem(1);
+                    prev.setDisabled(false);
+                }
+            } else if (activeId == 'card-1') {
+                if (direction == -1) {
+                    wizard.setActiveItem(0);
+                    prev.setDisabled(true);
+                } else {
+                    var answer2=Ext.getCmp('formQ5O').items.items.filter(item=>item.checked);
+                    var Q50Result= '';
+                    answer2.forEach(item=>{
+                        Q50Result+=item.boxLabel+","
+                    });
+                    Ext.getCmp('Q50Field').setValue(Q50Result);
+                    wizard.setActiveItem(2);
+                    next.setDisabled(true);
+                }
+            } else if (activeId == 'card-2') {
+                if (direction == -1) {
+                    wizard.setActiveItem(1);
+                    next.setDisabled(false);
+                }
+            }
+        };
+
+        var formQ1=new Ext.form.FormPanel({
+            xtype:'fieldset',
+            title:' Q1:番茄酱属于以下哪种垃圾？（单选)',
+            items:[{
+                xtype: 'radiogroup',
+                itemCls: 'x-check-group-alt',
+                id:'Q1123',
+                columns: 1,
+                items: [
+                    {boxLabel: '湿垃圾', name: 'rb-col', inputValue: 1},
+                    {boxLabel: '干垃圾', name: 'rb-col', inputValue: 2, },
+                    {boxLabel: '有害垃圾', name: 'rb-col', inputValue: 3},
+                    {boxLabel: '可回收物', name: 'rb-col', inputValue: 4}
+                ]
+            }],
+        });
+        var formQ5O=new Ext.form.FormPanel({
+            id:'formQ5O',
+            xtype:'fieldset',
+            title:'Q5O:王大叔出门遛狗后,哪些是正确处理狗狗粑粑的方法？（多选）',
+            defaultType: 'checkbox',
+            items:[{
+                fieldLabel: '',
+                boxLabel: '把粑粑用废纸包起来带回家处理',
+                name: 'q1'
+            }, {
+                fieldLabel: '',
+                labelSeparator: '',
+                boxLabel: '受污染的报纸放在有害垃圾上处理',
+                name: 'q2'
+            }, {
+                fieldLabel: '',
+                labelSeparator: '',
+                boxLabel: '没被污染的报纸按可回收的垃圾处理',
+                name: 'q3'
+            },{
+                fieldLabel: '',
+                labelSeparator: '',
+                boxLabel: '受污染的报纸涨水后按湿垃圾方式处理',
+                name: 'q4'
+            }],
+        });
+        var formResult=new Ext.form.FormPanel({
+            id:'testForm',
+            xtype:'fieldset',
+            title:'选择结果提交信息',
+            labelWidth: 50,
+            frame: true,
+            width: 300,
+            items:[{
+                xtype:'textfield',
+                name:'answer1',
+                id:'Q1Field',
+                fieldLabel: 'Q1 answer'
+            },{
+                xtype:'textarea',
+                name:'answer2',
+                fieldLabel: 'Q5O answer',
+                id:'Q50Field',
+                width:150
+            }],
+            buttons:[{
+                text: 'submit',
+                listeners:{
+                    'click': function(){
+                        Ext.Msg.alert('Tips!', 'Congratulation!')
+                    }}
+            }]
+        });
+        var viewport = new Ext.Viewport({
+            layout:'border',
+            items:[{
+                region: 'north',
+                id: 'wizard',
+                width: 500,
+                height:800,
+                title: '垃圾问卷调查',
+                layout:'card',
+                activeItem: 0,
+                bodyStyle: 'padding:15px',
+                defaults: {
+                    border:false
+                },
+                bbar: [{
+                    id: 'move-prev',
+                    text: '上一题',
+                    handler: navHandler.createDelegate(this, [-1]),
+                    disabled: true
+                }, '->',{
+                    id: 'move-next',
+                    text: '下一题',
+                    handler: navHandler.createDelegate(this, [1])
+                }],
+                items: [{
+                    id: 'card-0',
+                    items:[formQ1]
+
+                },{
+                    id: 'card-1',
+                    items:[formQ5O]
+                },{
+                    id: 'card-2',
+                    items:[formResult]
+                }]
+            },{
+                region: 'center',
+                split: true,
+                border: true
+            }]
+        });
+    </script>
+
+</head>
+<body>
+
+</body>
+</html>
